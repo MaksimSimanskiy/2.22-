@@ -12,11 +12,25 @@ from pathlib import Path
 import argparse
 
 
+def delete_shop():
+    conn = sqlite3.connect(load())
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        DELETE 
+        FROM shops
+        WHERE shop_id = (SELECT MAX(shop_id)  FROM shops);
+        """
+    )
+    conn.commit()
+    conn.close()
+
+
 def add_shop(
         name: str,
         product: str,
         price: int
-    ) -> None:
+    ):
     conn = sqlite3.connect(load())
     cursor = conn.cursor()
     cursor.execute(
@@ -45,11 +59,29 @@ def add_shop(
         """,
         (shop_id, price, product)
     )
+    cursor.execute(
+        """
+        SELECT shop_name.name, shops.product, shops.price
+        FROM shops
+        INNER JOIN shop_name ON shops.shop_id = shop_name.shop_id 
+        ORDER BY shops.shop_id DESC LIMIT 1
+        """
+    )
     conn.commit()
+    rows = cursor.fetchall()
     conn.close()
+    return [
+        {
+            "name": row[0],
+            "product": row[1],
+            "price": row[2],
+
+        }
+        for row in rows
+    ]
 
 
-def create_db(database_path: Path) -> None:
+def create_db(database_path: Path):
     """
     Создать базу данных.
     """
@@ -73,7 +105,14 @@ def create_db(database_path: Path) -> None:
         )
         """
     )
+    cursor.execute(
+        """
+        SELECT count(name) FROM sqlite_master WHERE type = 'table' AND name = 'shops' OR name = 'shop_name'
+        """
+    )
+    table = cursor.fetchone()[0]
     conn.close()
+    return table
 
 
 def display(shops: t.List[t.Dict[str, t.Any]]) -> None:
@@ -220,6 +259,11 @@ def main(command_line=None):
         parents=[file_parser],
         help="Display all product"
     )
+    _ = subparsers.add_parser(
+        "delete",
+        parents=[file_parser],
+        help="Delete last shop"
+    )
     # Создать субпарсер для выбора работников.
     select = subparsers.add_parser(
         "select",
@@ -241,6 +285,8 @@ def main(command_line=None):
         display(select_shop(args.name))
     elif args.command == "display":
         display(select_all())
+    elif args.command == "delete":
+        delete_shop()
     pass
 
 
