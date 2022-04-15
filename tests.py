@@ -20,15 +20,9 @@ class IndTest(unittest.TestCase):
     def test1_create_db(self):
         self.assertEqual(individual1.create_db(self.db_path), 2)
 
-    def test4_add_shop(self):
+    def test_add_shop(self):
         self.assertEqual(individual1.add_shop('text', 'text', 3), [{'name': 'text', 'product': 'text', 'price': 3}])
         individual1.delete_shop()
-
-    def test_create_db(self):
-        self.assertRaises(TypeError, individual1.create_db(self.db_path))
-
-    def test_select_all(self):
-        self.assertRaises(TypeError, individual1.select_all())
 
     def test1_select_shop(self):
         self.assertListEqual(individual1.select_shop("magnit"), [{'name': 'magnit', 'product': 'maslo', 'price': 234}])
