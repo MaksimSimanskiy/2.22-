@@ -12,8 +12,8 @@ from pathlib import Path
 import argparse
 
 
-def delete_shop():
-    conn = sqlite3.connect(load())
+def delete_shop(file):
+    conn = sqlite3.connect(file)
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -27,11 +27,12 @@ def delete_shop():
 
 
 def add_shop(
+        file: Path,
         name: str,
         product: str,
         price: int
     ):
-    conn = sqlite3.connect(load())
+    conn = sqlite3.connect(file)
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -50,7 +51,6 @@ def add_shop(
         shop_id = cursor.lastrowid
     else:
         shop_id = row[0]
-
         # Добавить информацию о новом продукте.
     cursor.execute(
         """
@@ -105,14 +105,6 @@ def create_db(database_path: Path):
         )
         """
     )
-    cursor.execute(
-        """
-        SELECT count(name) FROM sqlite_master WHERE type = 'table' AND name = 'shops' OR name = 'shop_name'
-        """
-    )
-    table = cursor.fetchone()[0]
-    conn.close()
-    return table
 
 
 def display(shops: t.List[t.Dict[str, t.Any]]) -> None:
@@ -147,11 +139,11 @@ def display(shops: t.List[t.Dict[str, t.Any]]) -> None:
             print(line)
 
 
-def select_all():
+def select_all(file):
     """
     Выбрать всех работников.
     """
-    conn = sqlite3.connect(load())
+    conn = sqlite3.connect(file)
     cursor = conn.cursor()
     cursor.execute(
         """
@@ -173,20 +165,19 @@ def select_all():
     ]
 
 
-def select_shop(name) -> t.List[t.Dict[str, t.Any]]:
+def select_shop(file, name) -> t.List[t.Dict[str, t.Any]]:
     """
     Выбрать магазин
     """
-    conn = sqlite3.connect(load())
+    conn = sqlite3.connect(file)
     cursor = conn.cursor()
     cursor.execute(
-        """
+        f"""
         SELECT shop_name.name, shops.product, shops.price
         FROM shops
         INNER JOIN shop_name ON shop_name.shop_id = shops.shop_id
-        WHERE shop_name.name == ?
-        """,
-        (name,)
+        WHERE shop_name.name == '{name}'
+        """
     )
     rows = cursor.fetchall()
     conn.close()
@@ -282,11 +273,11 @@ def main(command_line=None):
     if args.command == "add":
         add_shop(args.name, args.product, args.price)
     elif args.command == "select":
-        display(select_shop(args.name))
+        display(select_shop(load(), args.name))
     elif args.command == "display":
-        display(select_all())
+        display(select_all(load()))
     elif args.command == "delete":
-        delete_shop()
+        delete_shop(load())
     pass
 
 
