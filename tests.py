@@ -22,7 +22,7 @@ class IndTest(unittest.TestCase):
         self.conn = sqlite3.connect(self.fullpath)
         self.cursor = self.conn.cursor()
         self.cursor.execute(
-            f"""
+            """
                         SELECT shop_name.name, shops.product, shops.price
                         FROM shops
                         INNER JOIN shop_name ON shop_name.shop_id = shops.shop_id
@@ -50,9 +50,6 @@ class IndTest(unittest.TestCase):
 
     def test_add_shop(self):
         self.assertEqual(individual1.add_shop(self.fullpath, 'text', 'text', 3), [{'name': 'text', 'product': 'text', 'price': 3}])
-
-    def test_select_all(self):
-        self.assertRaises(TypeError, individual1.select_all(self.fullpath))
 
     def test1_select_shop_1(self):
         self.assertListEqual(self.result, [{'name': 'magnit', 'product': 'maslo', 'price': 234}])
