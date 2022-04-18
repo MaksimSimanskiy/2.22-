@@ -22,7 +22,7 @@ class IndTest(unittest.TestCase):
         self.conn = sqlite3.connect(self.fullpath)
         self.cursor = self.conn.cursor()
         self.cursor.execute(
-            """
+                        """
                         SELECT shop_name.name, shops.product, shops.price
                         FROM shops
                         INNER JOIN shop_name ON shop_name.shop_id = shops.shop_id
@@ -51,7 +51,7 @@ class IndTest(unittest.TestCase):
     def test_add_shop(self):
         individual1.add_shop(self.fullpath, 'text', 'text', 3)
         self.cursor.execute(
-            """
+                        """
                         SELECT shop_name.name, shops.product, shops.price
                         FROM shops
                         INNER JOIN shop_name ON shop_name.shop_id = shops.shop_id
