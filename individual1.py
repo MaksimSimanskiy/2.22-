@@ -68,17 +68,7 @@ def add_shop(
         """
     )
     conn.commit()
-    rows = cursor.fetchall()
     conn.close()
-    return [
-        {
-            "name": row[0],
-            "product": row[1],
-            "price": row[2],
-
-        }
-        for row in rows
-    ]
 
 
 def create_db(database_path: Path):
