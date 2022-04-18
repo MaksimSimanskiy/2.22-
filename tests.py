@@ -21,13 +21,12 @@ class IndTest(unittest.TestCase):
         self.fullpath = self.path_dir / 'test.db'
         self.conn = sqlite3.connect(self.fullpath)
         self.cursor = self.conn.cursor()
-        id = 1
         self.cursor.execute(
             f"""
                         SELECT shop_name.name, shops.product, shops.price
                         FROM shops
                         INNER JOIN shop_name ON shop_name.shop_id = shops.shop_id
-                        WHERE shop_name.shop_id == {id}
+                        WHERE shop_name.shop_id == 1
                         """
         )
         rows = self.cursor.fetchall()
