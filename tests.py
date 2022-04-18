@@ -70,9 +70,6 @@ class IndTest(unittest.TestCase):
         ]
         self.assertEqual(self.last, [{'name': 'text', 'product': 'text', 'price': 3}])
 
-    def test_select_all(self):
-        self.assertRaises(TypeError, individual1.select_all(self.fullpath))
-
     def test1_select_shop_1(self):
         self.assertListEqual(self.result, [{'name': 'magnit', 'product': 'maslo', 'price': 234}])
 
